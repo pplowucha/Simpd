@@ -1,0 +1,185 @@
+Version: 2.0
+
+#########################
+# Alternatives Section
+#
+
+Alternatives: &alternatives
+# Here, we list all the alternatives, together with their attributes. 
+# We can use these attributes later in the file when defining 
+# preferenceFunctions. The attributes can be quantitative or 
+# qualitative.
+  Sharp SJ-T1227M5W:
+    pojemnosc_chlodziarki: 187
+    pojemnosc_zamrazarki: 40    
+    cena: 799
+    kolor: bialy
+    zdolnosc_zamrazania: 2
+  Liebherr CTP 2521 Comfort:
+    pojemnosc_chlodziarki: 191
+    pojemnosc_zamrazarki: 44  
+    cena: 950
+    kolor: czarny
+    zdolnosc_zamrazania: 4
+  Sharp SJ-BA10IMXW2:
+    pojemnosc_chlodziarki: 230
+    pojemnosc_zamrazarki: 94    
+    cena: 1398
+    kolor: bialy
+    zdolnosc_zamrazania: 12
+  LG GBB59WBMZS:
+    pojemnosc_chlodziarki: 225
+    pojemnosc_zamrazarki: 93    
+    cena: 1998
+    kolor: czarny
+    zdolnosc_zamrazania: 9
+  Bosch KGN39ML3A:
+    pojemnosc_chlodziarki: 279
+    pojemnosc_zamrazarki: 87    
+    cena: 2298
+    kolor: srebrny
+    zdolnosc_zamrazania: 11
+  Samsung RB29FERNCSS:
+    pojemnosc_chlodziarki: 188
+    pojemnosc_zamrazarki: 98    
+    cena: 1799
+    kolor: srebrny
+    zdolnosc_zamrazania: 8
+  Bosch KGV36KL32:
+    pojemnosc_chlodziarki: 180
+    pojemnosc_zamrazarki: 90    
+    cena: 1399
+    kolor: niebieski
+    zdolnosc_zamrazania: 10
+  Samsung RB37J5925SS:
+    pojemnosc_chlodziarki: 169
+    pojemnosc_zamrazarki: 100    
+    cena: 2198
+    kolor: bialy
+    zdolnosc_zamrazania: 6
+  Amica FK239.3X:
+    pojemnosc_chlodziarki: 165
+    pojemnosc_zamrazarki: 90 
+    cena: 999
+    kolor: srebrny
+    zdolnosc_zamrazania: 6
+  Samsung RB31FERNDBC:
+    pojemnosc_chlodziarki: 180
+    pojemnosc_zamrazarki: 69    
+    cena: 1799
+    kolor: czarny
+    zdolnosc_zamrazania: 9
+  Samsung RB31FERNCSA:
+    pojemnosc_chlodziarki: 176
+    pojemnosc_zamrazarki: 80    
+    cena: 1899
+    kolor: szary
+    zdolnosc_zamrazania: 12
+  Bosch KGN39KL35:
+    pojemnosc_chlodziarki: 279
+    pojemnosc_zamrazarki: 87    
+    cena: 2099
+    kolor: czarny
+    zdolnosc_zamrazania: 10
+  Amica FK299.2FTZXAA:
+    pojemnosc_chlodziarki: 180
+    pojemnosc_zamrazarki: 70    
+    cena: 1698
+    kolor: srebrny
+    zdolnosc_zamrazania: 5
+  Samsung RB29FSRNDSA:
+    pojemnosc_chlodziarki: 246
+    pojemnosc_zamrazarki: 98    
+    cena: 2199
+    kolor: zielono-szary
+    zdolnosc_zamrazania: 8
+  Whirlpool WNF8 T3Z X H:
+    pojemnosc_chlodziarki: 234
+    pojemnosc_zamrazarki: 104    
+    cena: 1999
+    kolor: srebrny
+    zdolnosc_zamrazania: 12
+
+#
+# End of Alternatives Section
+#####################################
+
+#####################################
+# Goal Section
+#
+
+
+Goal:
+# The goal spans a tree of criteria and the alternatives
+  name: Zakup lodowki
+  description: >
+    This is a classic single decision maker problem. It models
+    the situation facing by a family that wants to buy a new fridge.
+  preferences:
+    # preferences are typically defined pairwise
+    # 1 means: A is equal to B
+    # 9 means: A is highly preferrable to B
+    # 1/9 means: B is highly preferrable to A
+    pairwise:
+      - [Wydajnosc, Jakosc, 3]
+      - [Wydajnosc, Styl, 7]
+      - [Wydajnosc, Cena, 1]
+      - [Jakosc, Styl, 7]
+      - [Jakosc, Cena, 1]
+      - [Styl, Cena, 1/7]
+  children: 
+    Wydajnosc: 
+      preferences:
+        # Komentarz - metoda s³uzaca do porownywania w parach tego, jak niska temperatura w stopniach Celsjusza mo¿e byc utrzymywana
+        pairwiseFunction: 
+            function(a1, a2) min(9, max(1/9, a2$zdolnosc_zamrazania/a1$zdolnosc_zamrazania))
+      children: *alternatives
+    Jakosc: 
+      preferences:
+        # Komentarz - ocena jakosci na podstawie pojemnosci wyznaczonej w litrach
+        scoreFunction:
+            function(a) a$pojemnosc_chlodziarki
+      children: *alternatives
+    Styl: 
+      preferences:
+        # Komentarz - ocena stylu na podstawie koloru; brane kolory pod uwage: zielono-szary, szaro-niebieski, szary, szaro-czerwony, czerwono-bialy, bialo-niebieski, niebieski, niebiesko-zolty, srebrny, pomaranczowy, czarny (jakiekolwiek inne kolory oceniamy na 5)
+        pairwiseFunction: >
+          PreferencjeStylu <- function(a1, a2) {
+            if (a1$kolor == "zielono-szary") wynik_stylu_dla_a1 <- 2
+            else if (a1$kolor == "szaro-niebieski") wynik_stylu_dla_a1 <- 1
+            else if (a1$kolor == "szary") wynik_stylu_dla_a1 <- 3
+            else if (a1$kolor == "szaro-czerwony") wynik_stylu_dla_a1 <- 2
+            else if (a1$kolor == "czerwono-bialy") wynik_stylu_dla_a1 <- 7
+            else if (a1$kolor == "bialo-niebieski") wynik_stylu_dla_a1 <- 6
+            else if (a1$kolor == "niebieski") wynik_stylu_dla_a1 <- 6
+            else if (a1$kolor == "niebiesko-zolty") wynik_stylu_dla_a1 <- 8
+            else if (a1$kolor == "srebrny") wynik_stylu_dla_a1 <- 4
+            else if (a1$kolor == "pomaranczowy") wynik_stylu_dla_a1 <- 9
+            else if (a1$kolor == "czarny") wynik_stylu_dla_a1 <- 3
+            else wynik_stylu_dla_a1 <- 5
+            if (a2$kolor == "zielono-szary") wynik_stylu_dla_a2 <- 2
+            else if (a2$kolor == "szaro-niebieski") wynik_stylu_dla_a2 <- 1
+            else if (a2$kolor == "szary") wynik_stylu_dla_a2 <- 3
+            else if (a2$kolor == "szaro-czerwony") wynik_stylu_dla_a2 <- 2
+            else if (a2$kolor == "czerwono-bialy") wynik_stylu_dla_a2 <- 7
+            else if (a2$kolor == "bialo-niebieski") wynik_stylu_dla_a2 <- 6
+            else if (a2$kolor == "niebieski") wynik_stylu_dla_a2 <- 6
+            else if (a2$kolor == "niebiesko-zolty") wynik_stylu_dla_a2 <- 8
+            else if (a2$kolor == "srebrny") wynik_stylu_dla_a2 <- 4
+            else if (a2$kolor == "pomaranczowy") wynik_stylu_dla_a2 <- 9
+            else if (a2$kolor == "czarny") wynik_stylu_dla_a2 <- 3
+            else wynik_stylu_dla_a2 <- 5
+            if (wynik_stylu_dla_a1 < wynik_stylu_dla_a2) return (wynik_stylu_dla_a2/wynik_stylu_dla_a1)
+            return (wynik_stylu_dla_a1/wynik_stylu_dla_a2)
+            }
+      children: *alternatives
+    Cena: 
+      preferences:
+        # Komentarz - metoda s³uzaca do porownywania w parach cen lodowek
+        pairwiseFunction: 
+            function(a1, a2) min(9, max(1/9, a2$cena/a1$cena))
+      children: *alternatives
+
+#
+# End of Goal Section
+#####################################

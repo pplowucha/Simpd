@@ -1,0 +1,7 @@
+library(ahp)
+lodowkaAhp <- Load('lodowki.ahp')
+Calculate(lodowkaAhp)
+print(lodowkaAhp, priority = function(x) x$sparent$priority["total", x$name])
+Visualize(lodowkaAhp)
+Analyze(lodowkaAhp)
+AnalyzeTable(lodowkaAhp)

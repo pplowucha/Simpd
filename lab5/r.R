@@ -1,6 +1,6 @@
 library("neuralnet")
 
-#Going to create a neural network to perform the rooting of such a function: x^2+exp(-x)
+#Going to create a neural network to perform the rooting of such a function: log10 (x^2)
 #Type ?neuralnet for more information on the neuralnet library
 
 #Generate 6 random numbers uniformly distributed between 0 and 100 (for very good results in such a range)

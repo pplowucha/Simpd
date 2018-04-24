@@ -3,7 +3,7 @@ library("OutrankingTools")
 library("topsis")
 library("MCDM")
 
-VIKOR <- function(decision, #matrix with all the alternatives
+topsis <- function(decision, #matrix with all the alternatives
                   weights,  #vector with the numeric values of the weights
                   cb,       #vector with the "type" of the criteria (benefit = "max", cost = "min")
                   v         #value with the real number of the 'v' parameter to calculate Q
